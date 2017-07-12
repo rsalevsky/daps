@@ -296,6 +296,9 @@ declare -A HELP_SUBCOMMAND
 SUBCOMMANDS[bigfile]="bigfile"
 HELP_SUBCOMMAND[bigfile]="Creates a single XML file (bigfile) from the MAIN-file referenced in the\nDC-file or specified on the command line by following all xi:includes.\nIf a ROOTID is specified, all xref-links pointing to locations outside the\nscope defined by the ROOTID, are replaced by text-links."
 
+SUBCOMMANDS[bookinfo]="build_generic"
+HELP_SUBCOMMAND[bookinfo]="Print information such as title, language, etc on a book or article."
+
 SUBCOMMANDS[checklink]="checklink"
 HELP_SUBCOMMAND[checklink]="Validates ftp and http(s) links in XML sources."
 
@@ -405,7 +408,7 @@ SUBCOMMANDS[pdf-name]="show_names"
 HELP_SUBCOMMAND[pdf-name]="Print the file name that would result when building a grayscale PDF document."
 
 SUBCOMMANDS[productinfo]="build_generic"
-HELP_SUBCOMMAND[productinfo]="Print the contents of the tags <productname> and <productnumber for the given ROOTID"
+HELP_SUBCOMMAND[productinfo]="Print the contents of the tags <productname> and <productnumber for the given ROOTID."
 
 SUBCOMMANDS[profile]="build_generic"
 HELP_SUBCOMMAND[profile]="Create profiled souces from the original XML sources. If the MAIN-file does\nnot contain profiling instructions, link the files into the profile directory."
@@ -810,6 +813,8 @@ Subcommands:
     bigfile                   Creates a single "big" XML file by resolving
                               xi:includes. Useful for detecting validation
                               errors that cannot be found otherwise.
+    bookinfo                  Print information such as tTitle, language, etc
+                              on a book or article.
     dapsenv                   Print a list of the most important make variables
                               and their value.
     images                    Generates all images for the given DC-file or

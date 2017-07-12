@@ -119,4 +119,26 @@ productinfo: $(BIGFILE)
 	@echo -n "PRODUCTNUMBER=\"$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "(/*/*/$(ELEM_PREFIX)productnumber)[1]" $< 2>/dev/null)\""
   endif
 
-
+#---------------
+# Bookinfo
+#
+.PHONY: bookinfo
+ifeq "$(DOCBOOK_VERSION)" "5"
+  bookinfo: NAMESPACE := -N db5="http://docbook.org/ns/docbook"
+  bookinfo: ELEM_PREFIX := db5:
+  bookinfo: ATTR_PREFIX := xml:
+endif
+bookinfo: $(BIGFILE)
+  ifdef ROOTID
+	@echo -e "Title:\t\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space((//*[@$(ATTR_PREFIX)id='$(ROOTID)']/*/$(ELEM_PREFIX)title)[1])" $< 2>/dev/null)" 
+	@echo -e "Product Name:\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space(//*[@$(ATTR_PREFIX)id='$(ROOTID)']/*/$(ELEM_PREFIX)productname)" $< 2>/dev/null)"
+	@echo -e "Product Version:\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space(//*[@$(ATTR_PREFIX)id='$(ROOTID)']/*/$(ELEM_PREFIX)productnumber)" $< 2>/dev/null)"
+	@echo -e "Authors:\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space(//*[@$(ATTR_PREFIX)id='$(ROOTID)']/*/$(ELEM_PREFIX)authorgroup)" $< 2>/dev/null)"
+  else
+	@echo -n "Title:\t\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space((/*/*/$(ELEM_PREFIX)title)[1])" $< 2>/dev/null)"
+	@echo -n "Product Name:\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space((/*/*/$(ELEM_PREFIX)productname)[1])" $< 2>/dev/null)"
+	@echo -n "Product Version:\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space((/*/*/$(ELEM_PREFIX)productnumber)[1])" $< 2>/dev/null)"
+	@echo -n "Authors:\t\t$(shell $(XMLSTARLET) sel $(NAMESPACE) -t -v "normalize-space((/*/*/$(ELEM_PREFIX)authorgroup))" $< 2>/dev/null)"
+  endif
+	@echo -e "Language:\t\t$(XMLLANG)"
+	@echo -e "Type:\t\t\t$(ROOTELEMENT)"
