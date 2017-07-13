@@ -22,7 +22,7 @@
   <!-- FIXME: Avoid selecting elements with id="" and use a bogus value as
   the default $rootid that is less probable than an empty id attribute. Seems
   super-hacky. -->
-<xsl:param name="rootid" select="'↺ CECI NEST PAS UNE ROOTID ↻'"/>
+<xsl:param name="rootid" select="''"/>
 
 <xsl:template match="/">
   <xsl:choose>
@@ -60,7 +60,13 @@
 </xsl:template>
 
 <xsl:template name="content">
-  <xsl:variable name="docroot" select="(//*[@id = $rootid]|//*[@xml:id = $rootid]|/*)[1]"/>
+  <!-- No matter whether we order the select in this variable as
+  rootid|documentroot or documentroot|rootid, we always need last() to select
+  the right element (that is, rootid where it exists). My working hypothesis
+  for this behavior is that whatever ordering I choose, xsltproc will always
+  order by document structure: root element -> first level -> second level ->
+  etc. -->
+  <xsl:variable name="docroot" select="(/*|//*[$rootid][@id = $rootid]|//*[$rootid][@xml:id = $rootid])[last()]"/>
   <xsl:variable name="docinfo" select="$docroot/*[contains(local-name(.),'info')][1]"/>
   <!-- If no $rootid is set, this is the same as $docinfo. -->
   <xsl:variable name="baseinfo" select="/*/*[contains(local-name(.),'info')][1]"/>
@@ -68,6 +74,10 @@
   <xsl:variable name="authors">
     <xsl:apply-templates select="($docinfo/authorgroup|$docinfo/db5:authorgroup|$docroot/authorgroup|$docroot/db5:authorgroup)[1]"/>
   </xsl:variable>
+
+  <xsl:if test="$rootid and not($docroot/@id = $rootid or $docroot/@xml:id = $rootid)">
+    <xsl:message>Root ID could not be found in document. Showing generic information about the document.</xsl:message>
+  </xsl:if>
 
   <xsl:call-template name="boilerplate">
     <xsl:with-param name="attribute" select="'Title'"/>
@@ -98,6 +108,11 @@
   <xsl:call-template name="boilerplate">
     <xsl:with-param name="attribute" select="'Type'"/>
     <xsl:with-param name="value" select="local-name($docroot)"/>
+  </xsl:call-template>
+  <xsl:call-template name="boilerplate">
+    <xsl:with-param name="attribute" select="'Root ID'"/>
+    <!-- Obviously, this makes more sense when not specifying a root ID beforehand. -->
+    <xsl:with-param name="value" select="($docroot/@id|$docroot/@xml:id)[1]"/>
     <xsl:with-param name="newline" select="0"/>
   </xsl:call-template>
 </xsl:template>
